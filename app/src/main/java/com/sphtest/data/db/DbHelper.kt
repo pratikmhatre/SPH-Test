@@ -27,7 +27,14 @@ class DbHelper @Inject constructor(@ApplicationContext val context: Context) : D
     }
 
     override fun getAllVolumes(): ArrayList<VolumeDataTable>? {
+
+
         val volumesList = volumeDao.loadAll()
+        return ArrayList(volumesList)
+    }
+
+    override fun getVolumeListByYear(year: String): ArrayList<VolumeDataTable>? {
+        val volumesList = volumeDao.queryBuilder().where(VolumeDataTableDao.Properties.Year.eq(year)).list()
         return ArrayList(volumesList)
     }
 }

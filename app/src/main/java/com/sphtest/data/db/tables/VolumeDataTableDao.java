@@ -23,9 +23,10 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
      */
     public static class Properties {
         public final static Property Pk = new Property(0, Long.class, "pk", true, "_id");
-        public final static Property Id = new Property(1, Long.class, "id", false, "ID");
+        public final static Property Id = new Property(1, String.class, "id", false, "ID");
         public final static Property Quarter = new Property(2, String.class, "quarter", false, "QUARTER");
-        public final static Property Volume = new Property(3, String.class, "volume", false, "VOLUME");
+        public final static Property Year = new Property(3, String.class, "year", false, "YEAR");
+        public final static Property Volume = new Property(4, String.class, "volume", false, "VOLUME");
     }
 
 
@@ -42,9 +43,10 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"volumes\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: pk
-                "\"ID\" INTEGER," + // 1: id
+                "\"ID\" TEXT," + // 1: id
                 "\"QUARTER\" TEXT," + // 2: quarter
-                "\"VOLUME\" TEXT);"); // 3: volume
+                "\"YEAR\" TEXT," + // 3: year
+                "\"VOLUME\" TEXT);"); // 4: volume
     }
 
     /** Drops the underlying database table. */
@@ -62,9 +64,9 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
             stmt.bindLong(1, pk);
         }
  
-        Long id = entity.getId();
+        String id = entity.getId();
         if (id != null) {
-            stmt.bindLong(2, id);
+            stmt.bindString(2, id);
         }
  
         String quarter = entity.getQuarter();
@@ -72,9 +74,14 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
             stmt.bindString(3, quarter);
         }
  
+        String year = entity.getYear();
+        if (year != null) {
+            stmt.bindString(4, year);
+        }
+ 
         String volume = entity.getVolume();
         if (volume != null) {
-            stmt.bindString(4, volume);
+            stmt.bindString(5, volume);
         }
     }
 
@@ -87,9 +94,9 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
             stmt.bindLong(1, pk);
         }
  
-        Long id = entity.getId();
+        String id = entity.getId();
         if (id != null) {
-            stmt.bindLong(2, id);
+            stmt.bindString(2, id);
         }
  
         String quarter = entity.getQuarter();
@@ -97,9 +104,14 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
             stmt.bindString(3, quarter);
         }
  
+        String year = entity.getYear();
+        if (year != null) {
+            stmt.bindString(4, year);
+        }
+ 
         String volume = entity.getVolume();
         if (volume != null) {
-            stmt.bindString(4, volume);
+            stmt.bindString(5, volume);
         }
     }
 
@@ -112,9 +124,10 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
     public VolumeDataTable readEntity(Cursor cursor, int offset) {
         VolumeDataTable entity = new VolumeDataTable( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // pk
-            cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // id
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // quarter
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // volume
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // year
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // volume
         );
         return entity;
     }
@@ -122,9 +135,10 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
     @Override
     public void readEntity(Cursor cursor, VolumeDataTable entity, int offset) {
         entity.setPk(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
-        entity.setId(cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1));
+        entity.setId(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setQuarter(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setVolume(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setYear(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setVolume(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
      }
     
     @Override

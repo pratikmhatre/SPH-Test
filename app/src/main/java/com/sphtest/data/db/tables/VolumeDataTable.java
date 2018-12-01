@@ -11,18 +11,24 @@ public class VolumeDataTable {
     private Long pk;
 
     @Property
-    private Long id;
+    private String id;
+
     @Property
     private String quarter;
 
     @Property
+    private String year;
+
+    @Property
     private String volume;
 
-    @Generated(hash = 1500977876)
-    public VolumeDataTable(Long pk, Long id, String quarter, String volume) {
+    @Generated(hash = 414971193)
+    public VolumeDataTable(Long pk, String id, String quarter, String year,
+            String volume) {
         this.pk = pk;
         this.id = id;
         this.quarter = quarter;
+        this.year = year;
         this.volume = volume;
     }
 
@@ -38,11 +44,11 @@ public class VolumeDataTable {
         this.pk = pk;
     }
 
-    public Long getId() {
+    public String getId() {
         return this.id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -54,6 +60,14 @@ public class VolumeDataTable {
         this.quarter = quarter;
     }
 
+    public String getYear() {
+        return this.year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
     public String getVolume() {
         return this.volume;
     }
@@ -61,4 +75,6 @@ public class VolumeDataTable {
     public void setVolume(String volume) {
         this.volume = volume;
     }
+
+    
 }

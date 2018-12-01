@@ -28,4 +28,8 @@ class DataManager @Inject constructor(val apiHelper: ApiHelper, val dbHelper: Db
     override fun fetchVolumeData(resourceId: String): Single<Response<VolumeData>> {
         return apiHelper.fetchVolumeData(resourceId = resourceId)
     }
+
+    override fun getVolumeListByYear(year: String): ArrayList<VolumeDataTable>? {
+        return dbHelper.getVolumeListByYear(year)
+    }
 }
