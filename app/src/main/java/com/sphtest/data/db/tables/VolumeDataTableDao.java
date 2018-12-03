@@ -27,6 +27,7 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
         public final static Property Quarter = new Property(2, String.class, "quarter", false, "QUARTER");
         public final static Property Year = new Property(3, String.class, "year", false, "YEAR");
         public final static Property Volume = new Property(4, String.class, "volume", false, "VOLUME");
+        public final static Property IsVolumeDecreased = new Property(5, Boolean.class, "isVolumeDecreased", false, "IS_VOLUME_DECREASED");
     }
 
 
@@ -46,7 +47,8 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
                 "\"ID\" TEXT," + // 1: id
                 "\"QUARTER\" TEXT," + // 2: quarter
                 "\"YEAR\" TEXT," + // 3: year
-                "\"VOLUME\" TEXT);"); // 4: volume
+                "\"VOLUME\" TEXT," + // 4: volume
+                "\"IS_VOLUME_DECREASED\" INTEGER);"); // 5: isVolumeDecreased
     }
 
     /** Drops the underlying database table. */
@@ -83,6 +85,11 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
         if (volume != null) {
             stmt.bindString(5, volume);
         }
+ 
+        Boolean isVolumeDecreased = entity.getIsVolumeDecreased();
+        if (isVolumeDecreased != null) {
+            stmt.bindLong(6, isVolumeDecreased ? 1L: 0L);
+        }
     }
 
     @Override
@@ -113,6 +120,11 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
         if (volume != null) {
             stmt.bindString(5, volume);
         }
+ 
+        Boolean isVolumeDecreased = entity.getIsVolumeDecreased();
+        if (isVolumeDecreased != null) {
+            stmt.bindLong(6, isVolumeDecreased ? 1L: 0L);
+        }
     }
 
     @Override
@@ -127,7 +139,8 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // id
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // quarter
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // year
-            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // volume
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // volume
+            cursor.isNull(offset + 5) ? null : cursor.getShort(offset + 5) != 0 // isVolumeDecreased
         );
         return entity;
     }
@@ -139,6 +152,7 @@ public class VolumeDataTableDao extends AbstractDao<VolumeDataTable, Long> {
         entity.setQuarter(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setYear(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setVolume(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
+        entity.setIsVolumeDecreased(cursor.isNull(offset + 5) ? null : cursor.getShort(offset + 5) != 0);
      }
     
     @Override

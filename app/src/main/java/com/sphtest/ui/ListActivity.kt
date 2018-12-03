@@ -2,9 +2,12 @@ package com.sphtest.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.widget.Toast
 import com.sphtest.R
 import com.sphtest.application.MyApplication
 import com.sphtest.data.db.tables.VolumeDataTable
@@ -32,27 +35,52 @@ class ListActivity : AppCompatActivity() {
         listViewModel = ViewModelProviders.of(this, listModelFactory)[ListViewModel::class.java]
 
 
+        val connectivityService = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeInfo = connectivityService.activeNetworkInfo
+
+
+        //check internet
+        if (activeInfo == null || !activeInfo.isConnected) {
+            Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_SHORT).show()
+        }
+
+
+
         recycler_volumes.apply {
             layoutManager = LinearLayoutManager(this@ListActivity)
             adapter = volumeListAdapter
         }
 
-        listViewModel.getVolumeDataList().observe(this, Observer<ArrayList<VolumeDataTable>> {
+        listViewModel.getVolumeDataList(false).observe(this, Observer<ArrayList<VolumeDataTable>> {
             if (it != null) {
                 doCalc()
             }
         })
+
+        swipe_list.setOnRefreshListener {
+            if (connectivityService.activeNetworkInfo == null || !connectivityService.activeNetworkInfo.isConnected) {
+                swipe_list.isRefreshing = false
+                Toast.makeText(this, getString(R.string.network_error), Toast.LENGTH_SHORT).show()
+            } else {
+                listViewModel.getVolumeDataList(true).observe(this, Observer<ArrayList<VolumeDataTable>> {
+                    if (it != null) {
+                        doCalc()
+                    }
+                })
+            }
+        }
     }
 
     private fun doCalc() {
-        val years = arrayOf("2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018")
-        for (year in years) {
-            listViewModel.doCalculations(year).observe(this, Observer<CustomModel> {
-                if (it != null) {
-                    volumeListAdapter.addVolume(it)
+        listViewModel.doCalculations().observe(this, Observer<ArrayList<CustomModel>> {
+            if (it != null) {
+                volumeListAdapter.addVolumes(it)
+                swipe_list.apply {
+                    if (isRefreshing) {
+                        isRefreshing = false
+                    }
                 }
-            })
-
-        }
+            }
+        })
     }
 }

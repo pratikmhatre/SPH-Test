@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SPH Test</string>
+    <string name="view_details">View Details</string>
+    <string name="network_error">Please check your network and try again</string>
 </resources>

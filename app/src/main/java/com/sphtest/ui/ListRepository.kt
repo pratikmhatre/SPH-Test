@@ -47,8 +47,9 @@ class ListRepository @Inject constructor(val dataManagerFace: DataManagerFace) {
         return mutableLiveData
     }
 
-    @SuppressLint("CheckResult")
     fun saveList(mutableLiveData: MutableLiveData<ArrayList<VolumeDataTable>>, arrayList: ArrayList<VolumeData.Result.Record>) {
+        val tempVolumeArray = ArrayList<VolumeDataTable>()
+        var lastVolume = 0.0
         Observable.fromIterable(arrayList)
                 .filter {
                     //pass records between 2008 & 2018 only
@@ -76,7 +77,12 @@ class ListRepository @Inject constructor(val dataManagerFace: DataManagerFace) {
                     }
 
                     override fun onNext(t: VolumeDataTable) {
+                        t.apply {
+                            isVolumeDecreased = volume.toDouble() < lastVolume
+                        }
+                        tempVolumeArray.add(t)
                         dataManagerFace.addSingleVolumeData(t)
+                        lastVolume = t.volume.toDouble()
                     }
 
                     override fun onError(e: Throwable) {

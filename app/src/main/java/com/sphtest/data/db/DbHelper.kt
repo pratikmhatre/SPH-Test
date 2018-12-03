@@ -10,7 +10,9 @@ import javax.inject.Inject
 class DbHelper @Inject constructor(@ApplicationContext val context: Context) : DbHelperFace {
     private val volumeDao = (context as MyApplication).daoSession.volumeDataTableDao
     override fun addSingleVolumeData(volumeData: VolumeDataTable) {
-        volumeDao.insert(volumeData)
+        if (volumeDao.queryBuilder().where(VolumeDataTableDao.Properties.Id.eq(volumeData.id)).list().isEmpty()) {
+            volumeDao.insert(volumeData)
+        }
     }
 
     override fun addAllVolumes(arrayList: ArrayList<VolumeDataTable>) {

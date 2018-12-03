@@ -1,11 +1,17 @@
 package com.sphtest.ui
 
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.support.v4.content.ContextCompat
+import android.support.v7.util.DiffUtil
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.sphtest.R
 import com.sphtest.data.db.tables.VolumeDataTable
 import com.sphtest.data.network.models.CustomModel
@@ -20,12 +26,12 @@ class VolumeListAdapter @Inject constructor(val listActivity: ListActivity, val 
 
     override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
         val myHolder = p0 as VolumeDataHolder
-        myHolder.bindItems(listActivity = listActivity, model = arrayList[p1])
+        myHolder.bindItems(listActivity = listActivity, model = arrayList[p1], position = p1)
     }
 
 
-    class VolumeDataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bindItems(listActivity: ListActivity, model: CustomModel) {
+    inner class VolumeDataHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bindItems(listActivity: ListActivity, model: CustomModel, position: Int) {
             with(itemView) {
                 val tvYear = findViewById<TextView>(R.id.tv_year)
                 val tvVolume = findViewById<TextView>(R.id.tv_volume)
@@ -35,27 +41,60 @@ class VolumeListAdapter @Inject constructor(val listActivity: ListActivity, val 
                 val tvVolumeQ4 = findViewById<TextView>(R.id.tv_q4)
                 val btnViewDetails = findViewById<ImageView>(R.id.btn_details)
                 btnViewDetails.visibility = View.GONE
+                tvVolumeQ1.visibility = View.GONE
+                tvVolumeQ2.visibility = View.GONE
+                tvVolumeQ3.visibility = View.GONE
+                tvVolumeQ4.visibility = View.GONE
+
+
+
+                btnViewDetails.setOnClickListener {
+                    Toast.makeText(listActivity, listActivity.getString(R.string.view_details), Toast.LENGTH_SHORT).show()
+                }
 
                 tvYear.text = model.year
                 tvVolume.text = model.totalVolume
+
                 for (position in model.quartersList!!.indices) {
                     val quarter = model.quartersList!![position]
+                    if (quarter.isDecreased) {
+                        btnViewDetails.visibility = View.VISIBLE
+                    }
+
                     when (position) {
                         0 -> {
                             val volume = "Q1 : ${quarter.value}"
-                            tvVolumeQ1.text = volume
+                            tvVolumeQ1.apply {
+                                text = volume
+                                visibility = View.VISIBLE
+                                background.setColorFilter(ContextCompat.getColor(listActivity, if (quarter.isDecreased) android.R.color.holo_red_light else android.R.color.holo_green_light), PorterDuff.Mode.SRC)
+                                btnViewDetails.visibility = if (quarter.isDecreased) View.VISIBLE else View.GONE
+                            }
+
                         }
                         1 -> {
                             val volume = "Q2 : ${quarter.value}"
-                            tvVolumeQ2.text = volume
+                            tvVolumeQ2.apply {
+                                text = volume
+                                visibility = View.VISIBLE
+                                background.setColorFilter(ContextCompat.getColor(listActivity, if (quarter.isDecreased) android.R.color.holo_red_light else android.R.color.holo_green_light), PorterDuff.Mode.SRC)
+                            }
                         }
                         2 -> {
                             val volume = "Q3 : ${quarter.value}"
-                            tvVolumeQ3.text = volume
+                            tvVolumeQ3.apply {
+                                text = volume
+                                visibility = View.VISIBLE
+                                background.setColorFilter(ContextCompat.getColor(listActivity, if (quarter.isDecreased) android.R.color.holo_red_light else android.R.color.holo_green_light), PorterDuff.Mode.SRC)
+                            }
                         }
                         3 -> {
                             val volume = "Q4 : ${quarter.value}"
-                            tvVolumeQ4.text = volume
+                            tvVolumeQ4.apply {
+                                text = volume
+                                visibility = View.VISIBLE
+                                background.setColorFilter(ContextCompat.getColor(listActivity, if (quarter.isDecreased) android.R.color.holo_red_light else android.R.color.holo_green_light), PorterDuff.Mode.SRC)
+                            }
                         }
                     }
                 }
@@ -65,9 +104,11 @@ class VolumeListAdapter @Inject constructor(val listActivity: ListActivity, val 
     }
 
     fun addVolumes(arrayList: ArrayList<CustomModel>) {
+        val callbacks = VolumeListUtils(oldList = this.arrayList, newList = arrayList)
+        val results = DiffUtil.calculateDiff(callbacks)
         this.arrayList.clear()
         this.arrayList.addAll(arrayList)
-        notifyDataSetChanged()
+        results.dispatchUpdatesTo(this)
     }
 
     fun addVolume(model: CustomModel) {

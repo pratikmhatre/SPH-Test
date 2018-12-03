@@ -22,14 +22,18 @@ public class VolumeDataTable {
     @Property
     private String volume;
 
-    @Generated(hash = 414971193)
+    @Property
+    private Boolean isVolumeDecreased;
+
+    @Generated(hash = 1108476782)
     public VolumeDataTable(Long pk, String id, String quarter, String year,
-            String volume) {
+            String volume, Boolean isVolumeDecreased) {
         this.pk = pk;
         this.id = id;
         this.quarter = quarter;
         this.year = year;
         this.volume = volume;
+        this.isVolumeDecreased = isVolumeDecreased;
     }
 
     @Generated(hash = 1043229581)
@@ -75,6 +79,15 @@ public class VolumeDataTable {
     public void setVolume(String volume) {
         this.volume = volume;
     }
+
+    public Boolean getIsVolumeDecreased() {
+        return this.isVolumeDecreased;
+    }
+
+    public void setIsVolumeDecreased(Boolean isVolumeDecreased) {
+        this.isVolumeDecreased = isVolumeDecreased;
+    }
+
 
     
 }
